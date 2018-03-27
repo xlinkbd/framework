@@ -77,6 +77,14 @@ class component {
 	}
 
 	public function addguielem($section, $guielem, $sortorder = 5, $placement = null, $category="other") {
+		$opmode = FreePBX::Config()->get('FPBXOPMODE');
+		if ($opmode == 'basic') {
+			$skip = array("Paging and Intercom" => 1, "XactView Settings" => 2, "Device Options" => 3);
+			if (($category == 'other') && array_key_exists($section, $skip)) {
+				return;
+			}
+		}
+
 		if(!ctype_digit($sortorder) && is_string($sortorder)) {
 			$category = $sortorder;
 			$sortorder = 5;
