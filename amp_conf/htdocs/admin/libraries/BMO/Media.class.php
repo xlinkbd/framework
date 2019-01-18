@@ -177,7 +177,7 @@ class Media extends DB_Helper{
 	 * @param  string $filename The file name (relative)
 	 * @param  boolean $download Whether to stream or download
 	 */
-	public function getHTML5File($filename, $download=false) {
+	public function getHTML5File($filename, $download=false, $dir='') {
 		$filename = basename($filename);
 		//Session write close because Safari slams us with requests
 		//asking for 2 bytes before proceeding to then request the full file.
@@ -186,7 +186,11 @@ class Media extends DB_Helper{
 		//blocked, therefore we always close the session before streaming the file
 		//http://konrness.com/php5/how-to-prevent-blocking-php-requests/
 		session_write_close();
-		$filename = $this->html5Path ."/".$filename;
+		$dir = !empty($dir) ? $dir : $this->html5Path;
+		if(!is_writable($dir)) {
+			throw new \Exception("Path $dir is not writable");
+		}
+		$filename = $dir ."/".$filename;
 		$format = pathinfo($filename, PATHINFO_EXTENSION);
 		if (is_file($filename)){
 			switch($format) {
