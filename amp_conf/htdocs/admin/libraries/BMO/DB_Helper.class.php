@@ -227,8 +227,8 @@ class DB_Helper {
 				self::checkException($e);
 			}
 
-			if(isset(self::$cache[$mod][$id][$var])) {
-				unset(self::$cache[$mod][$id][$var]);
+			if(isset(self::$cache[$mod][$id][$val])) {
+				unset(self::$cache[$mod][$id][$val]);
 			}
 			return true;
 		}
