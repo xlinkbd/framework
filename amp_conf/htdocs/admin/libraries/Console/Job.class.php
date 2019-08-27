@@ -134,6 +134,25 @@ class Job extends Command {
 	 * @return void
 	 */
 	private function runJobs($jobs=[]) {
+		//Move the pagingpro job to the front of the list so that
+		//other jobs don't delay its launch.  There is only one
+		//master cron_table entry for handling scheduled pagingpro calls
+		$pagingproIndex = NULL;
+		foreach($jobs as $k=>$v) {
+			if ($v['module'] == 'pagingpro' &&
+				$v['schedule'] === '* * * * *' &&
+				$v['job'] === 'scheduler' &&
+				$v['type'] === 'class')
+			{
+				$pagingproIndex = $k;
+			}
+		}
+		if (isset($pagingproIndex)) {
+			$pagingproElem = $jobs[$pagingproIndex];
+			unset($jobs[$pagingproIndex]);
+			array_unshift($jobs, $pagingproElem);
+		}
+
 		$time = new \DateTimeImmutable("now");
 		foreach($jobs as $config) {
 			if (!$this->force && !\Cron\CronExpression::factory($config['schedule'])->isDue($time)) {
