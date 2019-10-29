@@ -95,14 +95,15 @@ class Curl {
 	 * @param  string $url The URL to pass
 	 * @return object     PEST object supporting proxy
 	 */
-	public function requests($url) {
+	public function requests($url, $options = []) {
+		$optionsForRequests = array_merge($this->options, $options);
 		if (!$url) {
 			throw new \Exception("Invalid URL");
 		}
 		if (!isset($this->requestshandles[$url])) {
 			$session = new \Requests_Session($url);
 			$this->setProxy();
-			$session->options = $this->options;
+			$session->options = $optionsForRequests;
 			$this->requestshandles[$url] = $session;
 		}
 		return $this->requestshandles[$url];
